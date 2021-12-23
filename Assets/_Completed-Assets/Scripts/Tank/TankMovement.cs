@@ -87,7 +87,7 @@ namespace Complete
         m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
         m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
             Turnning();
-            Debug.Log("Turnning Force : " + TurnForce);
+            
         
         EngineAudio();
     }
