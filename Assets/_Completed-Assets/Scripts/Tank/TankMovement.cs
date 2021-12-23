@@ -12,6 +12,8 @@ namespace Complete
     public AudioClip m_EngineDriving;           // Audio to play when the tank is moving.
     public float m_PitchRange = 0.2f;           // The amount by which the pitch of the engine noises can vary.
 
+        private float TurnSpeed = 100;
+
     private string m_MovementAxisName;          // The name of the input axis for moving forward and back.
     private string m_TurnAxisName;              // The name of the input axis for turning.
     private Rigidbody m_Rigidbody;              // Reference used to move the tank.
@@ -20,9 +22,16 @@ namespace Complete
     private float m_OriginalPitch;              // The pitch of the audio source at the start of the scene.
     private ParticleSystem[] m_particleSystems; // References to all the particles systems used by the Tanks
 
+
+        private float TurnForce = 0;
+        private GameObject Turret;
+        private GameObject FireTransform;
+
     private void Awake()
     {
       m_Rigidbody = GetComponent<Rigidbody>();
+            Turret = GameObject.Find("TankTurret");
+            FireTransform = GameObject.Find("FireTransform");
     }
 
 
@@ -72,12 +81,29 @@ namespace Complete
 
     private void Update()
     {
-      // Store the value of both input axes.
-      m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
-      m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
-
-      EngineAudio();
+        // Store the value of both input axes.
+        m_MovementInputValue = Input.GetAxis(m_MovementAxisName);
+        m_TurnInputValue = Input.GetAxis(m_TurnAxisName);
+            Turnning();
+            Debug.Log("Turnning Force : " + TurnForce);
+        
+        EngineAudio();
     }
+
+    private void Turnning()
+        {
+            if (Input.GetKey(KeyCode.Q))
+            {
+                TurnForce -= 0.01f;
+                if (TurnForce < -1.0f) TurnForce = -1.0f;
+            }
+            else if (Input.GetKey(KeyCode.E))
+            {
+                TurnForce += 0.01f;
+                if (TurnForce > 1.0f) TurnForce = 1.0f;
+            }
+            else TurnForce = 0;
+        }
 
 
     private void EngineAudio()
@@ -113,7 +139,16 @@ namespace Complete
       // Adjust the rigidbodies position and orientation in FixedUpdate.
       Move();
       Turn();
+            TurnTurret();
     }
+
+        private void TurnTurret()
+        {
+            Turret.transform.Rotate(new Vector3(0, TurnForce * Time.deltaTime * TurnSpeed, 0));
+            Vector3 RotateCenter = Turret.transform.position;
+            RotateCenter.y = FireTransform.transform.position.y;
+            FireTransform.transform.RotateAround(Turret.transform.position, new Vector3(0,1,0), TurnForce * Time.deltaTime * TurnSpeed);
+        }
 
 
     private void Move()
