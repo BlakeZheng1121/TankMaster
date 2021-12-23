@@ -26,12 +26,14 @@ namespace Complete
         private float TurnForce = 0;
         private GameObject Turret;
         private GameObject FireTransform;
+        private GameObject AimSlider;
 
     private void Awake()
     {
       m_Rigidbody = GetComponent<Rigidbody>();
             Turret = GameObject.Find("TankTurret");
             FireTransform = GameObject.Find("FireTransform");
+            AimSlider = GameObject.Find("AimSlider");
     }
 
 
@@ -145,9 +147,8 @@ namespace Complete
         private void TurnTurret()
         {
             Turret.transform.Rotate(new Vector3(0, TurnForce * Time.deltaTime * TurnSpeed, 0));
-            Vector3 RotateCenter = Turret.transform.position;
-            RotateCenter.y = FireTransform.transform.position.y;
             FireTransform.transform.RotateAround(Turret.transform.position, new Vector3(0,1,0), TurnForce * Time.deltaTime * TurnSpeed);
+            AimSlider.transform.RotateAround(Turret.transform.position, new Vector3(0, 1, 0), TurnForce * Time.deltaTime * TurnSpeed);
         }
 
 
